@@ -15,3 +15,36 @@ header {
   color: white;
   font-size: 2rem;
 }
+
+#left-weight {
+  background-color: blue;
+  left: 0;
+}
+
+#right-weight {
+  background-color: red;
+  right: 0;
+}
+
+.bench__weight {
+  height: 4rem;
+  width: 4rem;
+  border-radius: 2rem;
+  position: absolute;
+}
+
+#bench-press {
+  position: relative;
+  top: 20rem;
+}
+
+#connecting-line {
+  background-color: green;
+  height: 100vh;
+  width: 100vw;
+
+  line {
+    stroke: red;
+    stroke-width: 1rem;
+  }
+}

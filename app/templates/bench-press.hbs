@@ -1,9 +1,13 @@
-<div id='left-weight'>
-  Height: {{leftHeight}}
-</div>
+<div id='bench-press'>
+  <div id='left-weight' class='bench__weight' style={{leftStyle}}>
+  </div>
 
-<div id='right-weight'>
-  Height: {{rightHeight}}
-</div>
+  <svg id='connecting-line'>
+    <line x1={{lineX1}} y1={{lineY1}} x2={{lineX2}} y2={{lineY2}}></line>
+  </svg>
 
-{{outlet}}
+  <div id='right-weight' class='bench__weight' style={{rightStyle}}>
+  </div>
+
+  {{outlet}}
+</div>
