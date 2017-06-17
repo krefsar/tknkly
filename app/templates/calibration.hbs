@@ -1,11 +1,20 @@
-{{#if doneConnecting}}
-  <h1 class='connection__title'>Connected!</h1>
-  {{fa-icon 'check'
-      class='connection__icon'}}
-{{else}}
-  <h1 class='connection__title'>Connecting...</h1>
-  {{fa-icon 'spinner'
-      class='connection__icon'}}
-{{/if}}
+<div class='connection layout-column layout-align-center-center'>
+  {{#if doneConnecting}}
+    <h1 class='connection__title connection__title--success'>Connected!</h1>
+  {{else}}
+    <h1 class='connection__title'>Connecting...</h1>
+  {{/if}}
 
-{{outlet}}
+  {{#liquid-bind doneConnecting use='scale' as |doneConnecting|}}
+    {{#if doneConnecting}}
+      {{fa-icon 'check'
+          class='connection__icon connection__icon--success'}}
+    {{else}}
+      {{fa-icon 'spinner'
+          class='connection__icon'
+          spin=true}}
+    {{/if}}
+  {{/liquid-bind}}
+
+  {{outlet}}
+</div>

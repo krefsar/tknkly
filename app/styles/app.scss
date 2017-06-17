@@ -1,19 +1,16 @@
 @import 'reset';
 @import 'ember-paper';
 
-$darkBlue: #1d157d;
+$darkblue: #1d157d;
+$seagreen: #00A99D;
+$lightgreen: #76b041;
+$lightyellow: #ffc914;
+$babyblue: #5bc0eb;
+$neutralblue: #8ea4d2;
+$lightred: #b74f6f;
 
 html {
   font-size: 16px;
-}
-
-header {
-  background-color: $darkBlue;
-}
-
-.header__title {
-  color: white;
-  font-size: 2rem;
 }
 
 #left-weight {
@@ -48,3 +45,59 @@ header {
     stroke-width: 1rem;
   }
 }
+
+// FRONT PAGE
+.front {
+  background-color: $seagreen;
+  color: white;
+  height: 100vh;
+}
+
+.front__logo {
+  font-size: 5rem;
+  text-align: center;
+  font-family: "Tahoma";
+}
+
+.front__button {
+  background-color: $babyblue;
+  border: 2px solid white;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.5rem;
+  height: 5rem;
+  margin-top: 6rem;
+  padding: 1rem;
+  &:active {
+    background-color: white;
+  }
+}
+
+// CALIBRATION PAGE
+.connection {
+  background-color: $neutralblue;
+  height: 100vh;
+}
+
+.connection__title {
+  color: $lightred;
+  font-size: 2rem;
+  font-family: 'Tahoma';
+}
+
+.connection__title--success {
+  color: white;
+}
+
+.connection__icon {
+  color: $lightred;
+  font-size: 4rem;
+  margin-top: 2rem;
+  width: 30vw;
+  text-align: center;
+}
+
+.connection__icon--success {
+  color: white;
+}
+

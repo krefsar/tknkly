@@ -21,7 +21,7 @@ export default Ember.Controller.extend({
     this.set('doneConnecting', true);
     Ember.run.later(this, () => {
       this.send('startBenchPress');
-    }, 1500);
+    }, 2000);
   },
 
   actions: {
