@@ -10,20 +10,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 
 public class SerialConnection implements SerialPortEventListener {
 
-    private String userId = "TEST_1";
+    public static String userId = "TEST_1";
+    public static boolean send = true;
     SerialPort serialPort;
     /** The port we're normally going to use. */
     private static final String PORT_NAMES[] = {
 //            "/dev/tty.usbserial-A9007UX1", // Mac OS X
-            "/dev/ttyACM1", // Raspberry Pi
+            "/dev/ttyACM0", // Raspberry Pi
 //            "COM3", // Windows
     };
     /**
@@ -46,7 +44,7 @@ public class SerialConnection implements SerialPortEventListener {
     public void initialize() {
         // the next line is for Raspberry Pi and
         // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
-        System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM1");
+        System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
 
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
@@ -106,12 +104,12 @@ public class SerialConnection implements SerialPortEventListener {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 String inputLine=input.readLine();
-                parseSend(inputLine);
-//                parseAdd(inputLine);
-//                if (data.size() > 10) {
-//                    SendData.sendList(data, userId);
-//                    data.clear();
-//                }
+                Optional<MotionDataObject> op = parse(inputLine);
+                if (send && op.isPresent()) {
+                    SendData.sendOne(op.get(),userId);
+                } else {
+                    System.out.println(op.get());
+                }
             } catch (Exception e) {
                 System.err.println(e.toString());
             }
@@ -119,9 +117,10 @@ public class SerialConnection implements SerialPortEventListener {
         // Ignore all the other eventTypes, but you should consider the other ones.
     }
 
-    private void parseAdd(String raw) {
+    private Optional<MotionDataObject> parse(String raw) throws IOException {
         String[] parsed = raw.split(",");
         if (parsed.length == 7) {
+            // Version 2. Will send time based on system start.
             Long time = Long.valueOf(parsed[0]);
             Double accX = Double.valueOf(parsed[1]);
             Double accY = Double.valueOf(parsed[2]);
@@ -129,8 +128,9 @@ public class SerialConnection implements SerialPortEventListener {
             Double roll = Double.valueOf(parsed[4]);
             Double pitch = Double.valueOf(parsed[5]);
             Double yaw = Double.valueOf(parsed[6]);
-            data.add( new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
+            return Optional.of(new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
         } else if (parsed.length == 6) {
+            // Version 1. Will used time at which the values are read in.
             Long time = System.currentTimeMillis();
             Double accX = Double.valueOf(parsed[0]);
             Double accY = Double.valueOf(parsed[1]);
@@ -138,34 +138,17 @@ public class SerialConnection implements SerialPortEventListener {
             Double roll = Double.valueOf(parsed[3]);
             Double pitch = Double.valueOf(parsed[4]);
             Double yaw = Double.valueOf(parsed[5]);
-            data.add( new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
+            return Optional.of(new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
         }
-    }
 
-    private void parseSend(String raw) throws IOException {
-        String[] parsed = raw.split(",");
-        if (parsed.length == 7) {
-            Long time = Long.valueOf(parsed[0]);
-            Double accX = Double.valueOf(parsed[1]);
-            Double accY = Double.valueOf(parsed[2]);
-            Double accZ = Double.valueOf(parsed[3]);
-            Double roll = Double.valueOf(parsed[4]);
-            Double pitch = Double.valueOf(parsed[5]);
-            Double yaw = Double.valueOf(parsed[6]);
-            SendData.sendOne( new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw), userId);
-        } else if (parsed.length == 6) {
-            Long time = System.currentTimeMillis();
-            Double accX = Double.valueOf(parsed[0]);
-            Double accY = Double.valueOf(parsed[1]);
-            Double accZ = Double.valueOf(parsed[2]);
-            Double roll = Double.valueOf(parsed[3]);
-            Double pitch = Double.valueOf(parsed[4]);
-            Double yaw = Double.valueOf(parsed[5]);
-            SendData.sendOne( new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw), userId);
-        }
+        return Optional.empty();
     }
 
     public static void main(String[] args) throws Exception {
+        if (args.length == 2) {
+            userId = args[0];
+            send = Boolean.valueOf(args[1]);
+        }
         SerialConnection main = new SerialConnection();
         main.initialize();
 //        Thread t= new Thread() {
