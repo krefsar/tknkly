@@ -1,0 +1,11 @@
+{{#if doneConnecting}}
+  <h1 class='connection__title'>Connected!</h1>
+  {{fa-icon 'check'
+      class='connection__icon'}}
+{{else}}
+  <h1 class='connection__title'>Connecting...</h1>
+  {{fa-icon 'spinner'
+      class='connection__icon'}}
+{{/if}}
+
+{{outlet}}
