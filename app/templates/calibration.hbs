@@ -5,16 +5,16 @@
     <h1 class='connection__title'>Connecting...</h1>
   {{/if}}
 
-  {{#liquid-bind doneConnecting use='scale' as |doneConnecting|}}
-    {{#if doneConnecting}}
-      {{fa-icon 'check'
-          class='connection__icon connection__icon--success'}}
-    {{else}}
-      {{fa-icon 'spinner'
-          class='connection__icon'
-          spin=true}}
-    {{/if}}
-  {{/liquid-bind}}
+  {{#liquid-if doneConnecting class='animation-transition'}}
+    {{fa-icon 'check'
+        class='connection__icon connection__icon--success'}}
+  {{/liquid-if}}
+
+  {{#unless doneConnecting}}
+    {{fa-icon 'spinner'
+        class='connection__icon'
+        spin=true}}
+  {{/unless}}
 
   {{outlet}}
 </div>

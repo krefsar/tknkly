@@ -75,12 +75,12 @@ html {
 
 // CALIBRATION PAGE
 .connection {
-  background-color: $neutralblue;
+  background-color: #f0c808;
   height: 100vh;
 }
 
 .connection__title {
-  color: $lightred;
+  color: red;
   font-size: 2rem;
   font-family: 'Tahoma';
 }
@@ -90,7 +90,7 @@ html {
 }
 
 .connection__icon {
-  color: $lightred;
+  color: red;
   font-size: 4rem;
   margin-top: 2rem;
   width: 30vw;
