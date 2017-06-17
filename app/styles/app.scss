@@ -1,0 +1,17 @@
+@import 'reset';
+@import 'ember-paper';
+
+$darkBlue: #1d157d;
+
+html {
+  font-size: 16px;
+}
+
+header {
+  background-color: $darkBlue;
+}
+
+.header__title {
+  color: white;
+  font-size: 2rem;
+}
