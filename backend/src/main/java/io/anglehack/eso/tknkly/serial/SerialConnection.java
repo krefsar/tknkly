@@ -9,9 +9,7 @@ import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
 import io.anglehack.eso.tknkly.serial.ports.LinuxPort;
-import io.anglehack.eso.tknkly.serial.receive.PitchSimpleSubscription;
-import io.anglehack.eso.tknkly.serial.receive.ReceiveInterface;
-import io.anglehack.eso.tknkly.serial.receive.SimpleSubscription;
+import io.anglehack.eso.tknkly.serial.receive.*;
 import io.anglehack.eso.tknkly.serial.send.SatoriSend;
 import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
@@ -28,6 +26,9 @@ public class SerialConnection implements SerialPortEventListener {
     SerialPort serialPort;
     static SatoriSend sendInterface;
     static PitchSimpleSubscription pitchSimpleSubscription;
+    static PerviousValuesSimpleSubscription perviousValuesSimpleSubscription;
+    static SimpleSubscription simpleSubscription;
+    static PitchFastChangeThresholdSubscription pitchFastChangeThresholdSubscription;
     /**
      * A BufferedReader which will be fed by a InputStreamReader
      * converting the bytes into characters
@@ -109,10 +110,10 @@ public class SerialConnection implements SerialPortEventListener {
                 Optional<MotionData> op = parse(inputLine);
                 if (send && op.isPresent()) {
                     sendInterface.sendModelData(op.get(),userId);
+                    writeToPort();
                 } else {
                     System.out.println(op.get());
                 }
-                writeToPort();
             } catch (Exception e) {
                 System.err.println(e.toString());
             }
@@ -145,7 +146,7 @@ public class SerialConnection implements SerialPortEventListener {
         for (ReceiveInterface receiveInterface : classList()) {
             if (receiveInterface.isError()) {
                 try {
-                    String send = "Hello \n";
+                    String send = "ERROR \n";
                     output.write(send.getBytes());
                     output.flush();
                 } catch (IOException e) {
@@ -156,7 +157,8 @@ public class SerialConnection implements SerialPortEventListener {
     }
 
     private List<ReceiveInterface> classList() {
-        return Arrays.asList(pitchSimpleSubscription);
+//        return Arrays.asList(pitchSimpleSubscription, perviousValuesSimpleSubscription, simpleSubscription);
+        return Arrays.asList(pitchFastChangeThresholdSubscription);
     }
 
     public static void main(String[] args) throws Exception {
@@ -179,9 +181,18 @@ public class SerialConnection implements SerialPortEventListener {
         sendInterface = new SatoriSend();
         sendInterface.setConfig(config);
         sendInterface.initialize();
+        simpleSubscription = new SimpleSubscription();
+        simpleSubscription.setConfig(config,userId);
+        simpleSubscription.initialize();
         pitchSimpleSubscription = new PitchSimpleSubscription();
         pitchSimpleSubscription.setConfig(config, userId);
         pitchSimpleSubscription.initialize();
+        perviousValuesSimpleSubscription = new PerviousValuesSimpleSubscription();
+        perviousValuesSimpleSubscription.setConfig(config, userId);
+        perviousValuesSimpleSubscription.initialize();
+        pitchFastChangeThresholdSubscription =  new PitchFastChangeThresholdSubscription();
+        pitchFastChangeThresholdSubscription.setConfig(config, userId);
+        pitchFastChangeThresholdSubscription.initialize();
         List<String> ports = new LinuxPort().getPorts();
         if (ports.isEmpty()) {
             throw new IllegalArgumentException("Ports are empty");
