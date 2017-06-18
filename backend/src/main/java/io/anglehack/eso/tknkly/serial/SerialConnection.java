@@ -4,12 +4,16 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import io.anglehack.eso.tknkly.models.MotionDataObject;
+import io.anglehack.eso.tknkly.models.DeviceHand;
+import io.anglehack.eso.tknkly.models.DeviceOptions;
+import io.anglehack.eso.tknkly.models.MotionData;
+import io.anglehack.eso.tknkly.models.SatoriConfig;
+import io.anglehack.eso.tknkly.serial.ports.LinuxPort;
+import io.anglehack.eso.tknkly.serial.send.SatoriSend;
+import org.apache.commons.cli.*;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.*;
 
 
@@ -17,21 +21,15 @@ public class SerialConnection implements SerialPortEventListener {
 
     public static String userId = "TEST_1";
     public static boolean send = true;
+    public static DeviceHand deviceHandOverwrite = DeviceHand.UNKNOWN;
     SerialPort serialPort;
-    /** The port we're normally going to use. */
-    private static final String PORT_NAMES[] = {
-//            "/dev/tty.usbserial-A9007UX1", // Mac OS X
-            "/dev/ttyACM0", // Raspberry Pi
-//            "COM3", // Windows
-    };
+    static SatoriSend sendInterface;
+
     /**
      * A BufferedReader which will be fed by a InputStreamReader
      * converting the bytes into characters
      * making the displayed results codepage independent
      */
-
-    private List<MotionDataObject> data = Collections.synchronizedList(new ArrayList());
-
 
     private BufferedReader input;
     /** The output stream to the port */
@@ -41,10 +39,10 @@ public class SerialConnection implements SerialPortEventListener {
     /** Default bits per second for COM port. */
     private static final int DATA_RATE = 9600;
 
-    public void initialize() {
+    public void initialize(List<String> ports) {
         // the next line is for Raspberry Pi and
         // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
-        System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
+        System.setProperty("gnu.io.rxtx.SerialPorts", ports.get(0));
 
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
@@ -52,7 +50,7 @@ public class SerialConnection implements SerialPortEventListener {
         //First, Find an instance of serial port as set in PORT_NAMES.
         while (portEnum.hasMoreElements()) {
             CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
-            for (String portName : PORT_NAMES) {
+            for (String portName : ports) {
                 if (currPortId.getName().equals(portName)) {
                     portId = currPortId;
                     break;
@@ -103,10 +101,11 @@ public class SerialConnection implements SerialPortEventListener {
     public synchronized void serialEvent(SerialPortEvent oEvent) {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
-                String inputLine=input.readLine();
-                Optional<MotionDataObject> op = parse(inputLine);
+                String inputLine= input.readLine();
+
+                Optional<MotionData> op = parse(inputLine);
                 if (send && op.isPresent()) {
-                    SendData.sendOne(op.get(),userId);
+                    sendInterface.sendModelData(op.get(),userId);
                 } else {
                     System.out.println(op.get());
                 }
@@ -117,40 +116,67 @@ public class SerialConnection implements SerialPortEventListener {
         // Ignore all the other eventTypes, but you should consider the other ones.
     }
 
-    private Optional<MotionDataObject> parse(String raw) throws IOException {
+    private Optional<MotionData> parse(String raw) throws IOException {
         String[] parsed = raw.split(",");
+        Long time = System.currentTimeMillis();
         if (parsed.length == 7) {
-            // Version 2. Will send time based on system start.
-            Long time = Long.valueOf(parsed[0]);
+            // Version 2. Will send handtype as well.
+            DeviceHand deviceHand = DeviceHand.valueOf(parsed[0]);
             Double accX = Double.valueOf(parsed[1]);
             Double accY = Double.valueOf(parsed[2]);
             Double accZ = Double.valueOf(parsed[3]);
             Double roll = Double.valueOf(parsed[4]);
             Double pitch = Double.valueOf(parsed[5]);
             Double yaw = Double.valueOf(parsed[6]);
-            return Optional.of(new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
+            if (!deviceHandOverwrite.equals(DeviceHand.UNKNOWN)) {
+                deviceHand = deviceHandOverwrite;
+            }
+            return Optional.of(new MotionData(time, accX, accY, accZ, roll, pitch, yaw, deviceHand));
         } else if (parsed.length == 6) {
             // Version 1. Will used time at which the values are read in.
-            Long time = System.currentTimeMillis();
             Double accX = Double.valueOf(parsed[0]);
             Double accY = Double.valueOf(parsed[1]);
             Double accZ = Double.valueOf(parsed[2]);
             Double roll = Double.valueOf(parsed[3]);
             Double pitch = Double.valueOf(parsed[4]);
             Double yaw = Double.valueOf(parsed[5]);
-            return Optional.of(new MotionDataObject(time, accX, accY, accZ, roll, pitch, yaw));
+            DeviceHand deviceHand = DeviceHand.LEFT;
+            if (!deviceHandOverwrite.equals(DeviceHand.UNKNOWN)) {
+                deviceHand = deviceHandOverwrite;
+            }
+            return Optional.of(new MotionData(time, accX, accY, accZ, roll, pitch, yaw, deviceHand));
         }
 
         return Optional.empty();
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length == 2) {
-            userId = args[0];
-            send = Boolean.valueOf(args[1]);
+        CommandLineParser parser = new DefaultParser();
+        CommandLine cmd = parser.parse( getOptions(), args);
+
+        Yaml yaml = new Yaml();
+        File file = new File(cmd.getOptionValue("satori"));
+        SatoriConfig config = yaml.loadAs(new FileInputStream(file), SatoriConfig.class);
+
+        if (cmd.hasOption("userId")) {
+            userId = cmd.getOptionValue("userId");
         }
+        if (cmd.hasOption("send")) {
+            send = Boolean.parseBoolean(cmd.getOptionValue("send"));
+        }if (cmd.hasOption("deviceHandOverwrite")) {
+            deviceHandOverwrite = DeviceHand.valueOf(cmd.getOptionValue("deviceHandOverwrite"));
+        }
+
+        sendInterface = new SatoriSend();
+        sendInterface.setConfig(config);
+        sendInterface.initialize();
+        List<String> ports = new LinuxPort().getPorts();
+        if (ports.isEmpty()) {
+            throw new IllegalArgumentException("Ports are empty");
+        }
+        System.out.println("Found ports: " + ports);
         SerialConnection main = new SerialConnection();
-        main.initialize();
+        main.initialize(ports);
 //        Thread t= new Thread() {
 //            public void run() {
 //                //the following line will keep this app alive for 1000 seconds,
@@ -161,4 +187,16 @@ public class SerialConnection implements SerialPortEventListener {
 //        t.start();
         System.out.println("Started");
     }
+
+    private static Options getOptions() {
+        Options options = new Options();
+        options.addOption("satori", true, "The satori config file.");
+        // currently registering users with device is more work so it can happen here.
+        options.addOption("userId", false, "UserId that the current run is associated with.");
+        options.addOption("deviceHandOverwrite", false, "Specify hand overwrite if set.");
+        options.addOption("send", false, "Default is false. If set to true can send data.");
+        return options;
+    }
+
+
 }

@@ -2,7 +2,7 @@ package io.anglehack.eso.tknkly.ws.resources;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import io.anglehack.eso.tknkly.models.MotionDataObject;
+import io.anglehack.eso.tknkly.models.MotionData;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +15,7 @@ import java.util.List;
 @Path("/serial")
 public class ReadSerialResource {
 
-    private Multimap<String, MotionDataObject> multimap;
+    private Multimap<String, MotionData> multimap;
 
     public ReadSerialResource() {
         this.multimap = ArrayListMultimap.create();
@@ -38,7 +38,7 @@ public class ReadSerialResource {
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postData(@PathParam("id") String id,
-                             List<MotionDataObject> data) {
+                             List<MotionData> data) {
         multimap.putAll(id,data);
         return Response.ok().build();
     }
@@ -47,7 +47,7 @@ public class ReadSerialResource {
     @Path("single/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postDataSingle(@PathParam("id") String id,
-                                   MotionDataObject data) {
+                                   MotionData data) {
         multimap.put(id,data);
         return Response.ok().build();
     }

@@ -1,7 +1,7 @@
-package io.anglehack.eso.tknkly.serial;
+package io.anglehack.eso.tknkly.serial.send;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.anglehack.eso.tknkly.models.MotionDataObject;
+import io.anglehack.eso.tknkly.models.MotionData;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -18,11 +18,11 @@ import java.util.List;
 /**
  * Created by root on 6/17/17.
  */
-public class SendData {
+public class RestSend implements SendInterface {
 
     public static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void sendList(List<MotionDataObject> data, String userId) throws IOException {
+    public static void sendList(List<MotionData> data, String userId) throws IOException {
 
         String url = "http://localhost:8080/serial/"+userId;
 
@@ -50,7 +50,14 @@ public class SendData {
             }
         }
     }
-    public static void sendOne(MotionDataObject object, String userId) throws IOException {
+
+    @Override
+    public void initialize() {
+
+    }
+
+    @Override
+    public void sendModelData(MotionData object, String userId) throws IOException {
 
         String url = "http://localhost:8080/serial/single/"+userId;
 

@@ -3,7 +3,7 @@ package io.anglehack.eso.tknkly.models;
 /**
  * Created by root on 6/17/17.
  */
-public class MotionDataObject {
+public class MotionData {
 
     private long time;
     private double accX;
@@ -12,11 +12,13 @@ public class MotionDataObject {
     private double roll;
     private double pitch;
     private double yaw;
+    private DeviceHand deviceHand;
+    private String userId;
 
-    public MotionDataObject() {
+    public MotionData() {
     }
 
-    public MotionDataObject(long time, double accX, double accY, double accZ, double roll, double pitch, double yaw) {
+    public MotionData(long time, double accX, double accY, double accZ, double roll, double pitch, double yaw, DeviceHand deviceHand) {
         this.time = time;
         this.accX = accX;
         this.accY = accY;
@@ -24,6 +26,19 @@ public class MotionDataObject {
         this.roll = roll;
         this.pitch = pitch;
         this.yaw = yaw;
+        this.deviceHand = deviceHand;
+    }
+
+    public MotionData(long time, double accX, double accY, double accZ, double roll, double pitch, double yaw, DeviceHand deviceHand, String userId) {
+        this.time = time;
+        this.accX = accX;
+        this.accY = accY;
+        this.accZ = accZ;
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
+        this.deviceHand = deviceHand;
+        this.userId = userId;
     }
 
     public long getTime() {
@@ -82,15 +97,33 @@ public class MotionDataObject {
         this.yaw = yaw;
     }
 
+    public DeviceHand getDeviceHand() {
+        return deviceHand;
+    }
+
+    public void setDeviceHand(DeviceHand deviceHand) {
+        this.deviceHand = deviceHand;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
-        return "MotionDataObject{" +
-                "accX=" + accX +
+        return "MotionData{" +
+                "time=" + time +
+                ", accX=" + accX +
                 ", accY=" + accY +
                 ", accZ=" + accZ +
                 ", roll=" + roll +
                 ", pitch=" + pitch +
                 ", yaw=" + yaw +
+                ", deviceHand=" + deviceHand +
                 '}';
     }
 }
