@@ -1,15 +1,19 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  satoriManager: Ember.inject.service(),
   doneConnecting: false,
 
   init() {
     this._super();
-    let socket = this.get('websockets').socketFor('ws://localhost:7000');
-    socket.on('open', (event) => {
-      console.log('Connection established.');
-      this.send('connected');
+    this.get('satoriManager').initializeSatori();
+    let rtm = this.get('satoriManager').get('satoriRtm');
+    rtm.on("enter-connected", () => {
+        console.log("Connected to RTM!");
+        this.send('connected');
     });
+    console.log('starting rtm service');
+    this.get('satoriManager').startSatori();
   },
 
   actions: {

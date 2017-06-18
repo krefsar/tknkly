@@ -1,11 +1,20 @@
-{{log currentAngle}}
 <div id='bicep-curl'>
   <div class='gauge'>
     <div class='frame'>
-      <span class='pointer' style={{computedAngle}}>
+      <span class='pointer' style={{computedPitch}}>
         <span class='pointer-cap'></span>
       </span>
       <span class='scale'></span>
+    </div>
+  </div>
+
+  <div class='yaw__gauge'>
+    <div class='yaw__frame'>
+      <span class='yaw__pointer' style={{computedYaw}}>
+        <span class='yaw__pointer-cap'></span>
+      </span>
+
+      <span class='yaw__scale'></span>
     </div>
   </div>
 </div>

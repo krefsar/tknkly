@@ -2,37 +2,30 @@ import Ember from 'ember';
 
 const {
   Controller,
-  computed,
-  String
+  computed
 } = Ember;
 
 export default Controller.extend({
-  currentAngle: -90,
-  maxAngle: 90,
-  minAngle: -90,
+  maxPitch: 90,
+  minPitch: -90,
 
-  computedAngle: computed('currentAngle', 'maxAngle', 'minAngle', function() {
-    let value = parseInt(this.get('currentAngle'), 10) * -1;
-    if (value < this.get('minAngle')) {
-      value = this.get('minAngle');
+  satoriManager: Ember.inject.service(),
+
+  computedPitch: computed('satoriManager.currentPitch', 'maxPitch', 'minPitch', function() {
+    let satoriManager = this.get('satoriManager');
+    let value = parseInt(satoriManager.get('currentPitch'), 10);
+    if (value < this.get('minPitch')) {
+      value = this.get('minPitch');
     }
 
-    if (value > this.get('maxAngle')) {
-      value = this.get('maxAngle');
+    if (value > this.get('maxPitch')) {
+      value = this.get('maxPitch');
     }
 
-    return String.htmlSafe(`transform: rotate(${value}deg)`);
+    return Ember.String.htmlSafe(`transform: rotate(${value * -1}deg)`);
   }),
 
   init() {
     this._super();
-    let socket = this.get('websockets').socketFor('ws://localhost:7000');
-    socket.on('message', (event) => {
-      this.handleMessage(event);
-    });
-  },
-
-  handleMessage(event) {
-    this.set('currentAngle', event.data);
   }
 });

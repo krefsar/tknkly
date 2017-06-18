@@ -17,4 +17,4 @@ export default function() {
     this.hasClass('animation-transition'),
     this.use('scale', { duration: 500 })
   );
-};
+}

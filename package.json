@@ -17,6 +17,7 @@
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
     "ember-ajax": "^2.4.1",
+    "ember-browserify": "^1.1.13",
     "ember-cli": "2.11.0",
     "ember-cli-app-version": "^2.0.0",
     "ember-cli-babel": "^5.1.7",
@@ -43,7 +44,8 @@
     "ember-svg-shapes": "1.0.0",
     "ember-websockets": "7.0.3",
     "liquid-fire": "0.27.3",
-    "loader.js": "^4.0.10"
+    "loader.js": "^4.0.10",
+    "satori-sdk-js": "^1.0.1"
   },
   "engines": {
     "node": ">= 0.12.0"
