@@ -50,12 +50,13 @@ html {
 
 // FRONT PAGE
 .front {
-  background-color: $seagreen;
+  background-color: #ff7043;
   color: white;
   height: 100vh;
 }
 
 .front__header {
+  background-color: #c63f17;
   padding: 0.5rem;
   color: white;
 }
@@ -73,12 +74,11 @@ html {
   color: white;
   border: none;
   border-top: 1px solid white;
-  background-color: purple;
+  background-color: #c7b800;
 }
 
 // EXERCISE TILE
 .exercise-tile {
-  background-color: gray;
   height: 22rem;
   width: 15rem;
   margin: 0 2rem;
@@ -92,12 +92,16 @@ html {
 
 .exercise-tile__details {
   padding: 0.5rem;
+  color: black;
+  font-size: 1.25rem;
 }
 
 .exercise-tile__name {
   font-size: 1.5rem;
   text-align: center;
   padding: 0.5rem;
+  background-color: #c7b800;
+  color: white;
 }
 
 .exercise-tile__description {
@@ -134,20 +138,20 @@ html {
 
 // BICEP CURL PAGE
 #bicep-curl {
-  background-color: purple;
+  background-color: white;
   height: 100vh;
   width: 100%;
   position: relative;
 }
 
 .left-window {
-  border-right: 1px solid white;
+  border-right: 1px solid black;
 }
 
 .gauge {
   position:relative; width:400px; height:200px;
-  top: -300px;
   transform: rotate(90deg);
+  top: 80px;
   transform-origin: left bottom;
   border-radius:200px 200px 0 0;
   background:#41b7d8;
@@ -209,15 +213,15 @@ html {
 }
 
 .yaw-window {
-  border-bottom: 3px solid white;
+  border-bottom: 3px solid black;
 }
 
 .yaw__gauge {
-  position:relative; width:214px; height:107px;
+  position:relative; width:200px; height:100px;
   border-radius:200px 200px 0 0;
   background:#41b7d8;
-  bottom: -190px;
-  right: -12px;
+  bottom: -257px;
+  right: -4px;
   -webkit-transition: background .3s;
      -moz-transition: background .3s;
       -ms-transition: background .3s;
@@ -276,11 +280,11 @@ html {
 }
 
 .roll__gauge {
-  position:relative; width:214px; height:214px;
-  border-radius: 107px;
+  position:relative; width:200px; height:200px;
+  border-radius: 100px;
   background:#41b7d8;
-  bottom: -40px;
-  right: -14px;
+  bottom: -150px;
+  right: -5px;
   -webkit-transition: background .3s;
      -moz-transition: background .3s;
       -ms-transition: background .3s;
@@ -331,4 +335,34 @@ html {
   width:100%;
   position:absolute; top:60px;
   font-size:11px; color:red; text-align:center;
+}
+
+.yaw__error {
+  position: absolute;
+  width: 35%;
+  text-align: center;
+  color: red;
+  padding: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.roll__error {
+  position: absolute;
+  width: 35%;
+  text-align: center;
+  color: red;
+  padding: 2rem;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.pitch__error {
+  position: absolute;
+  width: 35%;
+  text-align: center;
+  color: red;
+  padding: 2rem;
+  font-size: 3rem;
+  font-weight: bold;
 }

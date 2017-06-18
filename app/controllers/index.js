@@ -21,17 +21,17 @@ export default Controller.extend({
     set(this, 'exercises', A([
       {
         name: 'Bench Press',
-        image: 'http://nutribody.com/wp-content/uploads/2015/10/bench-press.jpg',
+        image: 'images/benchroutine.png',
         description: 'Overhead press, keep that bar straight!'
       },
       {
         name: 'Seated Row',
-        image: 'somesource.com',
+        image: 'images/seatedrow.png',
         description: 'Practice pulling straight back to focus on your back muscles.'
       },
       {
         name: 'Bicep Curl',
-        image: 'somesource.com',
+        image: 'images/bicepsketch.png',
         description: 'Practice the perfect bicep curl arch, all the way up and all the way down.'
       }
     ]));

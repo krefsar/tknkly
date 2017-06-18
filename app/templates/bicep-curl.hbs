@@ -1,9 +1,13 @@
 <div id='bicep-curl' class='layout-row'>
-  <div class='left-window flex-50 layout-column layout-align-center-start'>
+  <div class='left-window flex-50'>
     <div class='pitch-window'>
+      <div class='pitch__error'>
+        {{#if satoriErrors.pitchError}}
+          Try a slower pace
+        {{/if}}
+      </div>
       <div class='gauge'>
         <div class='frame'>
-          {{log 'computedPitch ' computedPitch}}
           <span class='pointer' style={{computedPitch}}>
             <span class='pointer-cap'></span>
           </span>
@@ -14,10 +18,14 @@
   </div>
 
   <div class='layout-column right-window flex-50'>
-    <div class='yaw-window flex-50 flex-column layout-align-center-start'>
+    <div class='yaw-window flex-50'>
+      <div class='yaw__error'>
+        {{#if satoriErrors.yawError}}
+          Keep your elbow steady
+        {{/if}}
+      </div>
       <div class='yaw__gauge'>
         <div class='yaw__frame'>
-          {{log 'computedYaw ' computedYaw}}
           <span class='yaw__pointer' style={{computedYaw}}>
             <span class='yaw__pointer-cap'></span>
           </span>
@@ -28,9 +36,13 @@
     </div>
 
     <div class='roll-window flex-50'>
+      <div class='roll__error'>
+        {{#if satoriErrors.rollError}}
+          Keep your forearm level
+        {{/if}}
+      </div>
       <div class='roll__gauge'>
         <div class='roll__frame'>
-          {{log 'computedRoll ' computedRoll}}
           <span class='roll__pointer' style={{computedRoll}}>
             <span class='roll__pointer-cap'></span>
           </span>

@@ -8,12 +8,11 @@ const {
 export default Controller.extend({
   maxPitch: 90,
   minPitch: -90,
-  minYaw: -90,
-  maxYaw: 90,
   minRoll: 0,
   maxRoll: 180,
 
   satoriManager: Ember.inject.service(),
+  satoriErrors: Ember.inject.service(),
 
   computedRoll: computed('satoriManager.currentRoll', 'maxRoll', 'minRoll', function() {
     let satoriManager = this.get('satoriManager');
@@ -25,8 +24,6 @@ export default Controller.extend({
     if (value > this.get('maxRoll')) {
       value = this.get('maxRoll');
     }
-
-    console.log(`rollValue: ${value}`);
 
     return Ember.String.htmlSafe(`transform:rotate(${value * -1 + 90}deg)`);
   }),
@@ -42,25 +39,31 @@ export default Controller.extend({
       value = this.get('maxPitch');
     }
 
-    console.log(`pitchValue: ${value}`);
-
     return Ember.String.htmlSafe(`transform: rotate(${value * -1}deg)`);
   }),
 
-  computedYaw: computed('satoriManager.currentYaw', 'maxYaw', 'minYaw', function() {
+  computedYaw: computed('satoriManager.currentYaw', function() {
     let satoriManager = this.get('satoriManager');
     let value = parseInt(satoriManager.get('currentYaw'), 10);
-    if (value < this.get('minYaw')) {
-      value = this.get('minYaw');
+    let center = parseInt(satoriManager.get('centerYaw'), 10);
+    let delta = Math.abs(value - center + 90);
+    let minYaw = 0;
+    let maxYaw = 180;
+    if (delta < minYaw) {
+      delta = minYaw;
     }
 
-    if (value > this.get('maxPitch')) {
-      value = this.get('maxPitch');
+    if (delta > 360) {
+      delta -= 360;
+    } else if (delta < -360) {
+      delta += 360;
     }
 
-    console.log(`yawValue: ${value}`);
+    if (delta > maxYaw) {
+      delta = maxYaw;
+    }
 
-    return Ember.String.htmlSafe(`transform: rotate(${value}deg`);
+    return Ember.String.htmlSafe(`transform: rotate(${+delta - 90}deg`);
   }),
 
   init() {
