@@ -7,7 +7,6 @@ import gnu.io.SerialPortEventListener;
 import io.anglehack.eso.tknkly.models.DeviceHand;
 import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
-import io.anglehack.eso.tknkly.models.SatoriConfig;
 import io.anglehack.eso.tknkly.serial.ports.LinuxPort;
 import io.anglehack.eso.tknkly.serial.receive.*;
 import io.anglehack.eso.tknkly.serial.send.SatoriSend;
@@ -27,8 +26,8 @@ public class SerialConnection implements SerialPortEventListener {
     static SatoriSend sendInterface;
     static PitchSimpleSubscription pitchSimpleSubscription;
     static PerviousValuesSimpleSubscription perviousValuesSimpleSubscription;
-    static SimpleSubscription simpleSubscription;
     static PitchFastChangeThresholdSubscription pitchFastChangeThresholdSubscription;
+    static YawSimpleSubscription yawSimpleSubscription;
     /**
      * A BufferedReader which will be fed by a InputStreamReader
      * converting the bytes into characters
@@ -147,7 +146,7 @@ public class SerialConnection implements SerialPortEventListener {
             if (receiveInterface.isError()) {
                 try {
                     String send = "ERROR \n";
-                    output.write(send.getBytes());
+                    output.write(send.getBytes()[0]);
                     output.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -157,8 +156,7 @@ public class SerialConnection implements SerialPortEventListener {
     }
 
     private List<ReceiveInterface> classList() {
-//        return Arrays.asList(pitchSimpleSubscription, perviousValuesSimpleSubscription, simpleSubscription);
-        return Arrays.asList(pitchFastChangeThresholdSubscription);
+        return Arrays.asList(pitchSimpleSubscription, perviousValuesSimpleSubscription, pitchFastChangeThresholdSubscription, yawSimpleSubscription);
     }
 
     public static void main(String[] args) throws Exception {
@@ -181,9 +179,6 @@ public class SerialConnection implements SerialPortEventListener {
         sendInterface = new SatoriSend();
         sendInterface.setConfig(config);
         sendInterface.initialize();
-        simpleSubscription = new SimpleSubscription();
-        simpleSubscription.setConfig(config,userId);
-        simpleSubscription.initialize();
         pitchSimpleSubscription = new PitchSimpleSubscription();
         pitchSimpleSubscription.setConfig(config, userId);
         pitchSimpleSubscription.initialize();
@@ -193,6 +188,9 @@ public class SerialConnection implements SerialPortEventListener {
         pitchFastChangeThresholdSubscription =  new PitchFastChangeThresholdSubscription();
         pitchFastChangeThresholdSubscription.setConfig(config, userId);
         pitchFastChangeThresholdSubscription.initialize();
+        yawSimpleSubscription =  new YawSimpleSubscription();
+        yawSimpleSubscription.setConfig(config, userId);
+        yawSimpleSubscription.initialize();
         List<String> ports = new LinuxPort().getPorts();
         if (ports.isEmpty()) {
             throw new IllegalArgumentException("Ports are empty");

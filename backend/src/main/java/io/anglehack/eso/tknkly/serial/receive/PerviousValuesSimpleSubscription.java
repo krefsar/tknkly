@@ -4,6 +4,7 @@ import com.satori.rtm.*;
 import com.satori.rtm.auth.RoleSecretAuthProvider;
 import com.satori.rtm.model.SubscriptionData;
 import com.satori.rtm.model.SubscriptionError;
+import io.anglehack.eso.tknkly.models.ErrorMessage;
 import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
@@ -70,7 +71,7 @@ public class PerviousValuesSimpleSubscription implements ReceiveInterface {
                         collect = false;
                         Long tempTimeMinMax = motionDatas.get(motionDatas.size()-1).getTime() - motionDatas.get(0).getTime();
                         if (tempTimeMinMax < timeMinMax) {
-                            clientPublish.publish(publish.getChannel(), "The user has done the curl too fast", Ack.NO);
+                            clientPublish.publish(publish.getChannel(), new ErrorMessage("pitch", "The user has done the curl too fast"), Ack.NO);
                             error = true;
                             motionDatas.clear();
                         }

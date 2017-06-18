@@ -8,6 +8,7 @@ import com.satori.rtm.*;
 import com.satori.rtm.auth.RoleSecretAuthProvider;
 import com.satori.rtm.model.SubscriptionData;
 import com.satori.rtm.model.SubscriptionError;
+import io.anglehack.eso.tknkly.models.ErrorMessage;
 import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
@@ -60,7 +61,7 @@ public class PitchFastChangeThresholdSubscription implements ReceiveInterface {
                     if (previous != null) {
                         double value = Math.abs(previous.getPitch() - msg.getPitch());
                         if (value > pitchThreshold && !recentChange) {
-                            clientPublish.publish(publish.getChannel(),"Roll changed fast current:" +msg.getPitch() +", prev: "+previous.getPitch(), Ack.NO);
+                            clientPublish.publish(publish.getChannel(),new ErrorMessage("pitch", "Pitch changed fast current:" +msg.getPitch() +", prev: "+previous.getPitch()), Ack.NO);
                             recentChange = true;
                             changeTime = System.currentTimeMillis() + 1000;
                         }  else if (recentChange && System.currentTimeMillis() > changeTime) {

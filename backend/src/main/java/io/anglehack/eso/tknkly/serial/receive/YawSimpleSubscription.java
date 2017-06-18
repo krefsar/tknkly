@@ -4,7 +4,6 @@ package io.anglehack.eso.tknkly.serial.receive;
  * Created by root on 6/18/17.
  */
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.satori.rtm.*;
 import com.satori.rtm.auth.RoleSecretAuthProvider;
 import com.satori.rtm.model.SubscriptionData;
@@ -13,18 +12,21 @@ import io.anglehack.eso.tknkly.models.ErrorMessage;
 import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
-import io.anglehack.eso.tknkly.serial.send.SatoriSend;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class PitchSimpleSubscription implements ReceiveInterface {
+public class YawSimpleSubscription implements ReceiveInterface {
 
     private String userId;
     private SatoriConfig subscribe;
     private SatoriConfig publish;
     private RtmClient clientSubscribe;
     private RtmClient clientPublish;
-    boolean recentChange = false;
-    Long changeTime = 0L;
+    boolean error = false;
+    double threshold = 3.5;
+    List<MotionData> list;
 //    can make this smarter... this actually ends up more complex.
     public void setConfig(ListSatoriConfig listSatoriConfig, String userId) {
 //        this.subscribe = getConfig(listSatoriConfig, SatoriSend.class);
@@ -32,6 +34,7 @@ public class PitchSimpleSubscription implements ReceiveInterface {
         this.subscribe = listSatoriConfig.getConfigs().get(0);
         this.publish = listSatoriConfig.getConfigs().get(1);
         this.userId = userId;
+        this.list = new ArrayList<>();
     }
 
     public void initialize() {
@@ -46,7 +49,7 @@ public class PitchSimpleSubscription implements ReceiveInterface {
         clientSubscribe.start();
         clientPublish.start();
 
-        String filter = String.format("select AVG(roll) as roll from `%s` where `userId` = '%s'", subscribe.getChannel(), userId);
+        String filter = String.format("select yaw as roll from `%s` where `userId` = '%s'", subscribe.getChannel(), userId);
 
         SubscriptionAdapter listener = new SubscriptionAdapter() {
 
@@ -58,14 +61,21 @@ public class PitchSimpleSubscription implements ReceiveInterface {
             @Override
             public void onSubscriptionData(SubscriptionData data) {
                 for (MotionData msg : data.getMessagesAsType(MotionData.class)) {
-                    System.out.println("Got message: " + msg);
-                    Double roll = msg.getRoll();
-                    if (roll > 10.5 && !recentChange) {
-                        clientPublish.publish(publish.getChannel(),new ErrorMessage("roll","Roll above expected value: " + roll), Ack.NO);
-                        recentChange = true;
-                        changeTime = System.currentTimeMillis() + 1000;
-                    } else if (recentChange && System.currentTimeMillis() > changeTime) {
-                        recentChange = false;
+                    list.add(msg);
+                    if (list.size() > 20) {
+                        error = false;
+                        int pointer = 1;
+                        while (pointer < list.size()-2) {
+                            Double tempDiff = Math.abs(list.get(pointer).getYaw() - list.get(pointer-1).getYaw());
+                            if (tempDiff > threshold) {
+                                clientPublish.publish(publish.getChannel(),new ErrorMessage("yaw", "Yaw change too fast"), Ack.NO);
+                                error = true;
+                            }
+                            if (error) {
+                                list.clear();
+                                return;
+                            }
+                        }
                     }
                 }
             }
@@ -77,6 +87,6 @@ public class PitchSimpleSubscription implements ReceiveInterface {
     }
 
     public boolean isError() {
-        return recentChange;
+        return error;
     }
 }
