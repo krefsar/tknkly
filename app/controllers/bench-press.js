@@ -23,11 +23,15 @@ export default Controller.extend({
   },
 
   leftStyle: computed('leftHeight', function() {
-    return Ember.String.htmlSafe(`top: ${this.get('leftHeight')}px`);
+    const windowHeight = $(window).height() / 2;
+    const leftAdjust = +this.get('leftHeight') + windowHeight;
+    return Ember.String.htmlSafe(`top: ${leftAdjust}px`);
   }),
 
   rightStyle: computed('rightHeight', function() {
-    return Ember.String.htmlSafe(`top: ${this.get('rightHeight')}px`);
+    const windowHeight = $(window).height() / 2;
+    const rightAdjust = +this.get('rightHeight') + windowHeight;
+    return Ember.String.htmlSafe(`top: ${rightAdjust}px`);
   }),
 
   lineX1: computed('leftHeight', function() {
@@ -35,7 +39,7 @@ export default Controller.extend({
   }),
 
   lineY1: computed('leftHeight', function() {
-    return +this.get('leftHeight') + 32;
+    return +this.get('leftHeight') + 32 + $(window).height() / 2;
   }),
 
   lineX2: computed('rightHeight', function() {
@@ -43,7 +47,7 @@ export default Controller.extend({
   }),
 
   lineY2: computed('rightHeight', function() {
-    return +this.get('rightHeight') + 32;
+    return +this.get('rightHeight') + 32 + $(window).height() / 2;
   }),
 
   handleMessageLeft(event) {

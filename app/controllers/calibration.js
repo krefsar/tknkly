@@ -5,39 +5,19 @@ export default Ember.Controller.extend({
 
   init() {
     this._super();
-    let socketLeft = this.get('websockets').socketFor('ws://localhost:7000');
-    let socketRight = this.get('websockets').socketFor('ws://localhost:7001');
-    socketLeft.on('open', (event) => {
-      console.log('Connection to left established.');
-      this.send('leftConnected');
+    let socket = this.get('websockets').socketFor('ws://localhost:7000');
+    socket.on('open', (event) => {
+      console.log('Connection established.');
+      this.send('connected');
     });
-    socketRight.on('open', (event) => {
-      console.log('Connection to right established.');
-      this.send('rightConnected');
-    });
-  },
-
-  finalizeConnection() {
-    this.set('doneConnecting', true);
-    Ember.run.later(this, () => {
-      this.send('startBenchPress');
-    }, 2000);
   },
 
   actions: {
-    leftConnected() {
-      this.set('leftConnected', true);
-
-      if (this.get('rightConnected')) {
-        this.finalizeConnection();
-      }
-    },
-
-    rightConnected() {
-      this.set('rightConnected', true);
-      if (this.get('leftConnected')) {
-        this.finalizeConnection();
-      }
+    connected() {
+      this.set('doneConnecting', true);
+      Ember.run.later(this, () => {
+        this.send('startBicepCurl');
+      }, 2000);
     }
   }
 });

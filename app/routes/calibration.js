@@ -2,9 +2,9 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   actions: {
-    startBenchPress() {
-      console.log('transitioning to bench press');
-      this.transitionTo('bench-press');
+    startBicepCurl() {
+      console.log('transitioning to bicep curl');
+      this.transitionTo('bicep-curl');
     }
   }
 });
