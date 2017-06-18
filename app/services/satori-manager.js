@@ -17,6 +17,7 @@ export default Ember.Service.extend({
     
     subscription.on('rtm/subscription/data', (pdu) => {
         pdu.body.messages.forEach((msg) => {
+          console.log(`yaw: ${msg.pitch}`);
           this.set('currentPitch', +msg.pitch);
           this.set('currentYaw', +msg.yaw);
         });

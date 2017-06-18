@@ -1,13 +1,25 @@
-<div class='front layout-column layout-align-center-center'>
-  <h1 class='front__logo'>
-    tknk.ly
-  </h1>
+<div class='front layout-column'> 
+  <header class='front__header layout-row layout-align-center-center'>
+    <h1 class='header__text'>
+      tknk.ly.io
+    </h1>
+  </header>
 
-  {{#link-to 'calibration'}}
-    <button class='front__button'>
-      Start Workout
-    </button>
-  {{/link-to}}
+  <div class='front__carousel layout-row layout-align-center-center flex'>
+    {{fa-icon 'chevron-left'
+        size='3'
+        click=(action 'previousExercise')}}
+    {{#liquid-bind currentIndex class='carousel-animation' as |currentIndex|}}
+      {{exercise-tile
+          exercise=currentExercise}}
+    {{/liquid-bind}}
 
-  {{outlet}}
+    {{fa-icon 'chevron-right'
+        size='3'
+        click=(action 'nextExercise')}}
+  </div>
+
+  <button class='front__button' {{action 'goToExercise'}}>
+    Start Workout
+  </button>
 </div>

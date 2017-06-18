@@ -17,4 +17,13 @@ export default function() {
     this.hasClass('animation-transition'),
     this.use('scale', { duration: 500 })
   );
+
+  this.transition(
+    this.hasClass('carousel-animation'),
+    this.toValue(function(toValue, fromValue) {
+      return toValue > fromValue;
+    }),
+    this.use('toLeft', { duration: 50 }),
+    this.reverse('toRight', { duration: 50 })  
+  );
 }
