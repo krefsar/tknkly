@@ -1,21 +1,43 @@
-<div id='bicep-curl'>
-  <div class='gauge'>
-    <div class='frame'>
-      <span class='pointer' style={{computedPitch}}>
-        <span class='pointer-cap'></span>
-      </span>
-      <span class='scale'></span>
+<div id='bicep-curl' class='layout-row'>
+  <div class='left-window flex-50 layout-column layout-align-center-start'>
+    <div class='pitch-window'>
+      <div class='gauge'>
+        <div class='frame'>
+          {{log 'computedPitch ' computedPitch}}
+          <span class='pointer' style={{computedPitch}}>
+            <span class='pointer-cap'></span>
+          </span>
+          <span class='scale'></span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class='yaw__gauge'>
-    <div class='yaw__frame'>
-      <span class='yaw__pointer' style={{computedYaw}}>
-        <span class='yaw__pointer-cap'></span>
-      </span>
+  <div class='layout-column right-window flex-50'>
+    <div class='yaw-window flex-50 flex-column layout-align-center-start'>
+      <div class='yaw__gauge'>
+        <div class='yaw__frame'>
+          {{log 'computedYaw ' computedYaw}}
+          <span class='yaw__pointer' style={{computedYaw}}>
+            <span class='yaw__pointer-cap'></span>
+          </span>
 
-      <span class='yaw__scale'></span>
+          <span class='yaw__scale'></span>
+        </div>
+      </div>
+    </div>
+
+    <div class='roll-window flex-50'>
+      <div class='roll__gauge'>
+        <div class='roll__frame'>
+          {{log 'computedRoll ' computedRoll}}
+          <span class='roll__pointer' style={{computedRoll}}>
+            <span class='roll__pointer-cap'></span>
+          </span>
+
+          <span class='roll__scale'></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-

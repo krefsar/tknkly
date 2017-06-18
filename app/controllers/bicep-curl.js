@@ -10,8 +10,26 @@ export default Controller.extend({
   minPitch: -90,
   minYaw: -90,
   maxYaw: 90,
+  minRoll: 0,
+  maxRoll: 180,
 
   satoriManager: Ember.inject.service(),
+
+  computedRoll: computed('satoriManager.currentRoll', 'maxRoll', 'minRoll', function() {
+    let satoriManager = this.get('satoriManager');
+    let value = parseInt(satoriManager.get('currentRoll'), 10);
+    if (value < this.get('minRoll')) {
+      value = this.get('minRoll');
+    }
+
+    if (value > this.get('maxRoll')) {
+      value = this.get('maxRoll');
+    }
+
+    console.log(`rollValue: ${value}`);
+
+    return Ember.String.htmlSafe(`transform:rotate(${value * -1 + 90}deg)`);
+  }),
 
   computedPitch: computed('satoriManager.currentPitch', 'maxPitch', 'minPitch', function() {
     let satoriManager = this.get('satoriManager');
@@ -23,6 +41,8 @@ export default Controller.extend({
     if (value > this.get('maxPitch')) {
       value = this.get('maxPitch');
     }
+
+    console.log(`pitchValue: ${value}`);
 
     return Ember.String.htmlSafe(`transform: rotate(${value * -1}deg)`);
   }),
@@ -37,6 +57,8 @@ export default Controller.extend({
     if (value > this.get('maxPitch')) {
       value = this.get('maxPitch');
     }
+
+    console.log(`yawValue: ${value}`);
 
     return Ember.String.htmlSafe(`transform: rotate(${value}deg`);
   }),

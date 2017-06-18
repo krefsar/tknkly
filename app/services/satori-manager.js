@@ -6,6 +6,7 @@ var endpoint = "wss://open-data.api.satori.com";
 var appKey = "CcBd9bF27E2C9fCCD74aab6fDDf9EabE";
 
 export default Ember.Service.extend({
+  currentRoll: 0,
   currentPitch: -90,
   currentYaw: 0,
   satoriRtm: null,
@@ -14,12 +15,12 @@ export default Ember.Service.extend({
     console.log('initializing satori');
     var rtm = new RTM(endpoint, appKey);
     let subscription = rtm.subscribe(channel, RTM.SubscriptionMode.SIMPLE);
-    
+
     subscription.on('rtm/subscription/data', (pdu) => {
         pdu.body.messages.forEach((msg) => {
-          console.log(`yaw: ${msg.pitch}`);
           this.set('currentPitch', +msg.pitch);
           this.set('currentYaw', +msg.yaw);
+          this.set('currentRoll', +msg.roll);
         });
     });
 

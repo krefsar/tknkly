@@ -140,19 +140,23 @@ html {
   position: relative;
 }
 
+.left-window {
+  border-right: 1px solid white;
+}
+
 .gauge {
   position:relative; width:400px; height:200px;
+  top: -300px;
   transform: rotate(90deg);
   transform-origin: left bottom;
   border-radius:200px 200px 0 0;
   background:#41b7d8;
-  top: -200px;
   -webkit-transition: background .3s;
      -moz-transition: background .3s;
       -ms-transition: background .3s;
           transition: background .3s;
 }
-.gauge .frame { 
+.gauge .frame {
   height:200px;
 }
 .gauge .pointer {
@@ -160,17 +164,17 @@ html {
   position:absolute; z-index:1; bottom:0; left:50%;
   background:white; border-radius:4px;
   box-shadow:1px 1px 3px rgba(0,0,0,.3);
-  
+
   -webkit-transition: -webkit-transform .3s ease 0s;
      -moz-transition:    -moz-transform .3s ease 0s;
       -ms-transition:     -ms-transform .3s ease 0s;
           transition:         transform .3s ease 0s;
-  
+
   -webkit-transform: rotate(-90deg);
      -moz-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
           transform: rotate(-90deg);
-  
+
   -webkit-transform-origin: bottom;
      -moz-transform-origin: bottom;
       -ms-transform-origin: bottom;
@@ -198,24 +202,28 @@ html {
 .gauge.exceeded { background:red; }
 .gauge.exceeded .value { color:red; }
 
-.value-exceeded { 
-  width:100%; 
-  position:absolute; top:60px; 
-  font-size:11px; color:red; text-align:center; 
+.value-exceeded {
+  width:100%;
+  position:absolute; top:60px;
+  font-size:11px; color:red; text-align:center;
+}
+
+.yaw-window {
+  border-bottom: 3px solid white;
 }
 
 .yaw__gauge {
-  position:relative; width:400px; height:200px;
+  position:relative; width:214px; height:107px;
   border-radius:200px 200px 0 0;
   background:#41b7d8;
-  bottom: -100px;
-  right: -50px;
+  bottom: -190px;
+  right: -12px;
   -webkit-transition: background .3s;
      -moz-transition: background .3s;
       -ms-transition: background .3s;
           transition: background .3s;
 }
-.yaw__gauge .yaw__frame { 
+.yaw__gauge .yaw__frame {
   height:200px;
 }
 .yaw__gauge .yaw__pointer {
@@ -223,17 +231,17 @@ html {
   position:absolute; z-index:1; bottom:0; left:50%;
   background:white; border-radius:4px;
   box-shadow:1px 1px 3px rgba(0,0,0,.3);
-  
+
   -webkit-transition: -webkit-transform .3s ease 0s;
      -moz-transition:    -moz-transform .3s ease 0s;
       -ms-transition:     -ms-transform .3s ease 0s;
           transition:         transform .3s ease 0s;
-  
+
   -webkit-transform: rotate(-90deg);
      -moz-transform: rotate(-90deg);
       -ms-transform: rotate(-90deg);
           transform: rotate(-90deg);
-  
+
   -webkit-transform-origin: bottom;
      -moz-transform-origin: bottom;
       -ms-transform-origin: bottom;
@@ -261,8 +269,66 @@ html {
 .yaw__gauge.exceeded { background:red; }
 .yaw__gauge.exceeded .value { color:red; }
 
-.value-exceeded { 
-  width:100%; 
-  position:absolute; top:60px; 
-  font-size:11px; color:red; text-align:center; 
+.value-exceeded {
+  width:100%;
+  position:absolute; top:60px;
+  font-size:11px; color:red; text-align:center;
+}
+
+.roll__gauge {
+  position:relative; width:214px; height:214px;
+  border-radius: 107px;
+  background:#41b7d8;
+  bottom: -40px;
+  right: -14px;
+  -webkit-transition: background .3s;
+     -moz-transition: background .3s;
+      -ms-transition: background .3s;
+          transition: background .3s;
+}
+.roll__gauge .roll__frame {
+  height:200px;
+}
+.roll__gauge .roll__pointer {
+  width:4px; height:100%; margin-left:-2px;
+  position:absolute; z-index:1; bottom:0px; left:50%;
+  background:white; border-radius:4px;
+  box-shadow:1px 1px 3px rgba(0,0,0,.3);
+
+  -webkit-transition: -webkit-transform .3s ease 0s;
+     -moz-transition:    -moz-transform .3s ease 0s;
+      -ms-transition:     -ms-transform .3s ease 0s;
+          transition:         transform .3s ease 0s;
+
+  -webkit-transform: rotate(-90deg);
+     -moz-transform: rotate(-90deg);
+      -ms-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+}
+.roll__gauge .roll__pointer .roll__pointer-cap {
+  width:16px; height:16px;
+  margin-bottom:-8px; margin-left:-8px;
+  position:absolute; bottom:50%; left:50%;
+  background:white; border-radius:100%;
+  box-shadow:1px 1px 5px rgba(0,0,0,.3);
+}
+.roll__gauge .roll__pointer .value {
+  width:60px; margin-left:-30px;
+  position:absolute; top:-25px;
+  font-size:10px; text-align:center;
+}
+.roll__gauge .labels {
+  width:100%;
+  position:absolute; top:100%;
+  font-size:10px; text-align:right;
+}
+.roll__gauge .labels .min { float:left; }
+
+.roll__gauge.exceeded { background:red; }
+.roll__gauge.exceeded .value { color:red; }
+
+.value-exceeded {
+  width:100%;
+  position:absolute; top:60px;
+  font-size:11px; color:red; text-align:center;
 }
