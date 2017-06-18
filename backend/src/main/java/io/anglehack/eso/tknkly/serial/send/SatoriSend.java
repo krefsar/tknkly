@@ -2,6 +2,7 @@ package io.anglehack.eso.tknkly.serial.send;
 
 import com.satori.rtm.*;
 import com.satori.rtm.auth.RoleSecretAuthProvider;
+import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
 
@@ -13,9 +14,9 @@ public class SatoriSend implements SendInterface {
     private SatoriConfig config;
     private RtmClient client;
 
-    public void setConfig(SatoriConfig config) {
+    public void setConfig(ListSatoriConfig listSatoriConfig) {
+        this.config = listSatoriConfig.getConfigs().get(0);
         this.channel = config.getChannel();
-        this.config = config;
     }
 
     @Override

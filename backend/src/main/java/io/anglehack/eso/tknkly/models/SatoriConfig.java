@@ -5,11 +5,20 @@ package io.anglehack.eso.tknkly.models;
  */
 public class SatoriConfig {
 
+    private String name;
     private String endpoint;
     private String appkey;
     private String role;
     private String roleSecretKey;
     private String channel;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getEndpoint() {
         return endpoint;

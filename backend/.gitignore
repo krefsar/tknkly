@@ -3,3 +3,4 @@
 target/
 dependency-reduced-pom.xml
 local_satori.yml
+list_local_satori.yml

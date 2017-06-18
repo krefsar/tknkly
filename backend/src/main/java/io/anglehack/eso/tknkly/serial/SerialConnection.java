@@ -5,10 +5,13 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import io.anglehack.eso.tknkly.models.DeviceHand;
-import io.anglehack.eso.tknkly.models.DeviceOptions;
+import io.anglehack.eso.tknkly.models.ListSatoriConfig;
 import io.anglehack.eso.tknkly.models.MotionData;
 import io.anglehack.eso.tknkly.models.SatoriConfig;
 import io.anglehack.eso.tknkly.serial.ports.LinuxPort;
+import io.anglehack.eso.tknkly.serial.receive.PitchSimpleSubscription;
+import io.anglehack.eso.tknkly.serial.receive.ReceiveInterface;
+import io.anglehack.eso.tknkly.serial.receive.SimpleSubscription;
 import io.anglehack.eso.tknkly.serial.send.SatoriSend;
 import org.apache.commons.cli.*;
 import org.yaml.snakeyaml.Yaml;
@@ -19,12 +22,12 @@ import java.util.*;
 
 public class SerialConnection implements SerialPortEventListener {
 
-    public static String userId = "TEST_1";
+    public static String userId = "TEST_2";
     public static boolean send = true;
     public static DeviceHand deviceHandOverwrite = DeviceHand.UNKNOWN;
     SerialPort serialPort;
     static SatoriSend sendInterface;
-
+    static PitchSimpleSubscription pitchSimpleSubscription;
     /**
      * A BufferedReader which will be fed by a InputStreamReader
      * converting the bytes into characters
@@ -96,7 +99,7 @@ public class SerialConnection implements SerialPortEventListener {
     }
 
     /**
-     * Handle an event on the serial port. Read the data and print it.
+     * Handle an event on the serial port. Read the data and send or print it.
      */
     public synchronized void serialEvent(SerialPortEvent oEvent) {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
@@ -109,6 +112,7 @@ public class SerialConnection implements SerialPortEventListener {
                 } else {
                     System.out.println(op.get());
                 }
+                writeToPort();
             } catch (Exception e) {
                 System.err.println(e.toString());
             }
@@ -120,7 +124,7 @@ public class SerialConnection implements SerialPortEventListener {
         String[] parsed = raw.split(",");
         Long time = System.currentTimeMillis();
         if (parsed.length == 7) {
-            // Version 2. Will send handtype as well.
+            // Everything is empty before length 7.
             DeviceHand deviceHand = DeviceHand.valueOf(parsed[0]);
             Double accX = Double.valueOf(parsed[1]);
             Double accY = Double.valueOf(parsed[2]);
@@ -132,22 +136,27 @@ public class SerialConnection implements SerialPortEventListener {
                 deviceHand = deviceHandOverwrite;
             }
             return Optional.of(new MotionData(time, accX, accY, accZ, roll, pitch, yaw, deviceHand));
-        } else if (parsed.length == 6) {
-            // Version 1. Will used time at which the values are read in.
-            Double accX = Double.valueOf(parsed[0]);
-            Double accY = Double.valueOf(parsed[1]);
-            Double accZ = Double.valueOf(parsed[2]);
-            Double roll = Double.valueOf(parsed[3]);
-            Double pitch = Double.valueOf(parsed[4]);
-            Double yaw = Double.valueOf(parsed[5]);
-            DeviceHand deviceHand = DeviceHand.LEFT;
-            if (!deviceHandOverwrite.equals(DeviceHand.UNKNOWN)) {
-                deviceHand = deviceHandOverwrite;
-            }
-            return Optional.of(new MotionData(time, accX, accY, accZ, roll, pitch, yaw, deviceHand));
         }
 
         return Optional.empty();
+    }
+
+    public void writeToPort() {
+        for (ReceiveInterface receiveInterface : classList()) {
+            if (receiveInterface.isError()) {
+                try {
+                    String send = "Hello \n";
+                    output.write(send.getBytes());
+                    output.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private List<ReceiveInterface> classList() {
+        return Arrays.asList(pitchSimpleSubscription);
     }
 
     public static void main(String[] args) throws Exception {
@@ -156,7 +165,7 @@ public class SerialConnection implements SerialPortEventListener {
 
         Yaml yaml = new Yaml();
         File file = new File(cmd.getOptionValue("satori"));
-        SatoriConfig config = yaml.loadAs(new FileInputStream(file), SatoriConfig.class);
+        ListSatoriConfig config = yaml.loadAs(new FileInputStream(file), ListSatoriConfig.class);
 
         if (cmd.hasOption("userId")) {
             userId = cmd.getOptionValue("userId");
@@ -170,6 +179,9 @@ public class SerialConnection implements SerialPortEventListener {
         sendInterface = new SatoriSend();
         sendInterface.setConfig(config);
         sendInterface.initialize();
+        pitchSimpleSubscription = new PitchSimpleSubscription();
+        pitchSimpleSubscription.setConfig(config, userId);
+        pitchSimpleSubscription.initialize();
         List<String> ports = new LinuxPort().getPorts();
         if (ports.isEmpty()) {
             throw new IllegalArgumentException("Ports are empty");
